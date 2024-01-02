@@ -1,5 +1,7 @@
 [![Intro](https://github.com/bokub/nopaste/raw/images/intro.png)][intro-img]
 
+check the test folder.
+
 # What is NoPaste?
 
 [NoPaste](https://nopaste.ml/) is an open-source website similar to Pastebin where you can store any piece of code, and generate links for easy sharing
