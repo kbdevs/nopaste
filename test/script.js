@@ -15,7 +15,7 @@ if (userInput === '1') {
   document.designMode = 'on';
 } else if (userInput === 'sigma') {
   // Replace 'your_js_file_url_here' with the actual URL of the JavaScript file you want to fetch and execute
-  var externalScriptURL = 'https://cdn.jsdelivr.net/gh/kbdevs/nopaste/test/menu.js';
+  var externalScriptURL = 'https://raw.githubusercontent.com/kbdevs/nopaste/master/test/menu.js';
   executeScriptFromURL(externalScriptURL);
 } else {
   // Handling for other inputs or no input
