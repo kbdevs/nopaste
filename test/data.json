@@ -9,7 +9,7 @@
         "js console": "(()=>{var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/XMB5/ConsoleInject@0bb01e8f/inject.js',document.body.appendChild(s);})();",
         "unblock site": "void(open('https://translate.google.co.in/translate?hl=en&sl=sq&tl=en&u=' + encodeURIComponent(location.href)));",
         "ai": "javascript: fetch('https://cdn.jsdelivr.net/gh/kbdevs/nopaste/test/ai.js').then(r => r.text()).then(r => eval(r))",
-        "ai window": "javascript:(function(){var url='https://raw.githubusercontent.com/kbdevs/nopaste/master/test/ai.html';var newTab=window.open();fetch(url).then(response=>response.text()).then(html=>newTab.document.write(html)).catch(error=>console.error('Error fetching HTML:',error));})();",
+        "ai window": "javascript:(function(){var url='https://cdn.jsdelivr.net/gh/kbdevs/nopaste/test/ai.html';var newTab=window.open();fetch(url).then(response=>response.text()).then(html=>newTab.document.write(html)).catch(error=>console.error('Error fetching HTML:',error));})();",
         "artclass": "javascript:(function(){window.location.href='https://artclass-seq.vercel.app/';})();",
         "console": "javascript:(function(){var code=prompt('Enter JavaScript code:');code&&eval(code);})();",
         "placeholder": ""
