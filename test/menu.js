@@ -24,6 +24,6 @@ javascript:(function() {
         }
     }
 
-    var jsonURL = 'https://cdn.jsdelivr.net/gh/kbdevs/nopaste/test/data.json'; // Replace with your JSON file URL
+    var jsonURL = 'https://raw.githubusercontent.com/kbdevs/nopaste/master/test/data.json'; // Replace with your JSON file URL
     loadJSON(jsonURL, showOptionsAndExecute);
 })();
