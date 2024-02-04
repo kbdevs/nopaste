@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home - Google Drive</title>
+    <link rel="icon" type="image/png" href="https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png">
+    <style>
+        body {
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #222;
+            font-family: 'Lexend', Arial, sans-serif; /* Added 'Lexend' font */
+        }
+
+        .chat-container {
+            height: 390px;
+            border: 1px solid #8845a2;
+            margin: 10px;
+            padding: 10px;
+            overflow-y: scroll;
+            background-color: #333;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        .message {
+            margin-bottom: 10px;
+        }
+
+        .user-message {
+            color: #fff;
+        }
+
+        .bot-message {
+            color: #8953af;
+        }
+
+        .input-container {
+            margin-top: 10px;
+            align-items: center;
+        }
+
+        #message-input {
+            margin-left: 10px;
+            flex: 1;
+            width: 50%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            margin-bottom: 5px;
+        }
+
+        #send-button {
+            padding: 5px 10px;
+            background-color: #8953af;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="message bot-message">Welcome to the chat! Replies may take a few seconds to compute and may not be accurate, check it yourself</div>
+    </div>
+    <div class="input-container">
+        <input type="text" id="message-input" placeholder="Type your message...">
+        <button id="send-button">Send</button>
+    </div>
+
+    <script>
+        (function(){
+            var chatContainer = document.querySelector('.chat-container');
+            var messageInput = document.querySelector('#message-input');
+            var sendButton = document.querySelector('#send-button');
+
+            function sendMessage() {
+                var message = messageInput.value.trim();
+                if (message !== "") {
+                    var messageElement = document.createElement('div');
+                    messageElement.classList.add('message', 'user-message');
+                    messageElement.textContent = message;
+                    chatContainer.appendChild(messageElement);
+
+                    // Send message to the server and get response
+                    var url = "https://api.cloudflare.com/client/v4/accounts/6d6f7cdb2f9a91dae4fe89fa9e48117e/ai/run/@cf/meta/llama-2-7b-chat-int8";
+                    var headers = {
+                        "Authorization": "Bearer 18xmwoqct0jwN__M77WSzmocIwOK5hdy6SFxCCOq",
+                        "Content-Type": "application/json"
+                    };
+                    var data = {
+                        "prompt": message
+                    };
+                    var corsAnywhereUrl = 'https://corsproxy.io/?';
+
+                    fetch(corsAnywhereUrl + url, {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        var responseMessage = data.result.response;
+                        var responseElement = document.createElement('div');
+                        responseElement.classList.add('message', 'bot-message');
+                        responseElement.textContent = responseMessage;
+                        chatContainer.appendChild(responseElement);
+                    })
+                    .catch(error => {
+                        console.error("Error occurred: " + error.message);
+                    });
+
+                    messageInput.value = "";
+                }
+            }
+
+            sendButton.addEventListener('click', sendMessage);
+            messageInput.addEventListener('keydown', function(event) {
+                if (event.key === "Enter") {
+                    sendMessage();
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
