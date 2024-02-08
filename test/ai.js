@@ -10,7 +10,7 @@
         var data = {"contents":[
             {"role": "user",
                  "parts":[{"text": promptText}]}]};
-        var corsAnywhereUrl = 'https://seq-stop-block.onrender.com/';
+        var corsAnywhereUrl = 'https://web-production-43a1e.up.railway.app/';
 
         fetch(corsAnywhereUrl + url, {
             method: 'POST',
