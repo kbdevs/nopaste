@@ -34,7 +34,7 @@
         var promptText = "FOR EACH QUESTION AND SET OF ANSWERS I WANT YOU TO JUST REPLY WITH THE CORRECT ANSWER IN THE FORMAT OF, QUESTION:, ANSWER | " + alertText;
 
         if (promptText !== null && promptText.trim() !== "") {
-            option = prompt("gemini or llama (type the one you want)")
+            option = prompt("gemini or llama (type the one you want, gemini is better)")
             if (option == 'gemini') {
                 // take my account id, I don't care
                 var url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=AIzaSyAHBZJKJw4zQNkNpl1VD2TGioLpz7sFeSk";
