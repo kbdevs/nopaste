@@ -3,30 +3,28 @@
 
     if (promptText !== null && promptText.trim() !== "") {
         // take my account id, i don't care
-        var url = "https://api.cloudflare.com/client/v4/accounts/6d6f7cdb2f9a91dae4fe89fa9e48117e/ai/run/@cf/meta/llama-2-7b-chat-int8";
+        var url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=AIzaSyAHBZJKJw4zQNkNpl1VD2TGioLpz7sFeSk";
         var headers = {
-            // take my api key, i don't care
-            "Authorization": "Bearer 18xmwoqct0jwN__M77WSzmocIwOK5hdy6SFxCCOq",
             "Content-Type": "application/json"
         };
-        var data = {
-            "prompt": promptText
-        };
+        var data = {"contents":[
+            {"role": "user",
+                 "parts":[{"text": promptText}]}]};
         var corsAnywhereUrl = 'https://seq-stop-block.onrender.com/';
 
         fetch(corsAnywhereUrl + url, {
             method: 'POST',
             headers: headers,
             body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-            var responseArea = data.result.response;
-            alert(responseArea);
-        })
-        .catch(error => {
-            alert("Error occurred: " + error.message);
-        });
+            })
+            .then(response => response.json())
+            .then(data => {
+                var responseArea = data.candidates[0]?.content?.parts[0]?.text || "No response text available.";
+                alert("Responses may be inaccurate \n\n" + responseArea);
+            })
+            .catch(error => {
+                alert("Error occurred: " + error.message);
+            });
     } else {
         alert("Prompt area cannot be empty. Please try again.");
     }
