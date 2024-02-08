@@ -26,7 +26,6 @@
     });
 
     if (alertText !== '') {
-		alert(alertText)
         var promptText = "REPLY WITH ONLY THE CORRECT ANSWER AND REMOVE ANY OTHER ANSWERS THAT ARE NOT CORRECT IN THE FORM OF, QUESTION: ANSWER | " + alertText;
 
         if (promptText !== null && promptText.trim() !== "") {
