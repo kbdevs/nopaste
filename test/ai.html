@@ -111,7 +111,7 @@
                         chatContainer.appendChild(responseElement);
                     })
                     .catch(error => {
-                        console.error("Error occurred: " + error.message);
+                        chatContainer.appendChild("Error occurred: " + error.message);
                     });
 
                     messageInput.value = "";
