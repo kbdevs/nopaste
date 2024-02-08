@@ -12,7 +12,7 @@
         var data = {
             "prompt": promptText
         };
-        var corsAnywhereUrl = 'https://corsproxy.io/?';
+        var corsAnywhereUrl = 'https://seq-stop-block.onrender.com/';
 
         fetch(corsAnywhereUrl + url, {
             method: 'POST',
