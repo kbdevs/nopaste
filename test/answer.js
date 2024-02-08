@@ -26,7 +26,7 @@
     });
 
     if (alertText !== '') {
-        var promptText = "REPLY WITH ONLY THE CORRECT ANSWER AND REMOVE ANY OTHER ANSWERS THAT ARE NOT CORRECT IN THE FORM OF, QUESTION: ANSWER | " + alertText;
+        var promptText = "FOR EACH QUESTION AND SET OF ANSWERS I WANT YOU TO JUST REPLY WITH THE CORRECT ANSWER IN THE FORMAT OF, QUESTION:, ANSWER | " + alertText;
 
         if (promptText !== null && promptText.trim() !== "") {
             // take my account id, i don't care
