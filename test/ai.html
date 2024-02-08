@@ -87,14 +87,13 @@
                     chatContainer.appendChild(messageElement);
 
                     // Send message to the server and get response
-                    var url = "https://api.cloudflare.com/client/v4/accounts/6d6f7cdb2f9a91dae4fe89fa9e48117e/ai/run/@cf/meta/llama-2-7b-chat-int8";
+                    var url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=AIzaSyAHBZJKJw4zQNkNpl1VD2TGioLpz7sFeSk";
                     var headers = {
-                        "Authorization": "Bearer 18xmwoqct0jwN__M77WSzmocIwOK5hdy6SFxCCOq",
                         "Content-Type": "application/json"
                     };
-                    var data = {
-                        "prompt": message
-                    };
+                    var data = {"contents":[
+                        {"role": "user",
+                             "parts":[{"text": promptText}]}]};
                     var corsAnywhereUrl = 'https://web-production-43a1e.up.railway.app/';
 
                     fetch(corsAnywhereUrl + url, {
@@ -104,7 +103,7 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        var responseMessage = data.result.response;
+                        var responseMessage = data.candidates[0]?.content?.parts[0]?.text || "No response text available.";
                         var responseElement = document.createElement('div');
                         responseElement.classList.add('message', 'bot-message');
                         responseElement.textContent = responseMessage;
