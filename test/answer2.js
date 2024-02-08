@@ -11,7 +11,7 @@
         {"role": "user",
           "parts":[{"text": "CONTEXT: " + context + promptText}]}]};
     if (promptText != null) {
-        var corsAnywhereUrl = 'https://seq-stop-block.onrender.com/';
+        var corsAnywhereUrl = 'https://web-production-43a1e.up.railway.app/';
         fetch(corsAnywhereUrl + url, {
             method: 'POST',
             headers: headers,
