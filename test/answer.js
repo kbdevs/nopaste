@@ -30,11 +30,9 @@
     });
 
     if (alertText !== '') {
-        alert(alertText);
 
         var promptText = "FOR EACH QUESTION AND SET OF ANSWERS I WANT YOU TO JUST REPLY WITH THE CORRECT ANSWER IN THE FORMAT OF, QUESTION:, ANSWER | " + alertText;
 
-        alert(promptText);
         if (promptText !== null && promptText.trim() !== "") {
             // take my account id, i don't care
             var url = "https://api.cloudflare.com/client/v4/accounts/6d6f7cdb2f9a91dae4fe89fa9e48117e/ai/run/@cf/meta/llama-2-7b-chat-fp16";
