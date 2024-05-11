@@ -15,7 +15,6 @@
         "movies": "javascript:(function(){window.location.href='https://movie-web-tau-steel.vercel.app';})();",
         "proxy": "javascript:(function(){window.location.href='https://proxyservice-catchmeifyoucan.koyeb.app';})();",
         "console": "javascript:(function(){var code=prompt('Enter JavaScript code:');code&&eval(code);})();",
-        "eaglercraft": "javascript:(function(){var url='https://cdn.jsdelivr.net/gh/kbdevs/nopaste@latest/test/eagle.html';var newTab=window.open();fetch(url).then(response=>response.text()).then(html=>newTab.document.write(html)).catch(error=>console.error('Error fetching HTML:',error));})();",
         "placeholder": "",
     }
 }
