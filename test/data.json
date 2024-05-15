@@ -15,6 +15,7 @@
         "movies": "javascript:(function(){window.location.href='https://movie-web-tau-steel.vercel.app';})();",
         "proxy": "javascript:(function(){window.location.href='https://proxyservice-catchmeifyoucan.koyeb.app';})();",
         "console": "javascript:(function(){var code=prompt('Enter JavaScript code:');code&&eval(code);})();",
+        "slowhot": "javascript:(function(){window.location.href='https://kbdevs.github.io/slow-hot-computer/';})();",
         "placeholder": "",
     }
 }
