@@ -7,6 +7,7 @@
         @import url('https://web-production-43a1e.up.railway.app/https://fonts.googleapis.com/css2?family=Lexend&display=swap');
         
         body {
+            display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -15,12 +16,20 @@
             font-family: 'Lexend', sans-serif; /* Added 'Lexend' font */
         }
 
+        .chat-wrapper {
+            display: flex;
+            flex-direction: column;
+            width: 80%;
+            max-width: 800px;
+        }
+
         .chat-container {
+            flex: 1;
             height: 390px;
             border: 1px solid #8845a2;
-            margin: 10px;
+            margin: 10px 0;
             padding: 10px;
-            overflow-y: scroll;
+            overflow-y: auto;
             background-color: #333;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 5px;
@@ -39,37 +48,45 @@
         }
 
         .input-container {
-            margin-top: 10px;
+            display: flex;
             align-items: center;
+            margin: 10px 0;
         }
 
         #message-input {
-            margin-left: 10px;
             flex: 1;
-            width: 50%;
             padding: 5px;
             border: 1px solid #ccc;
             border-radius: 3px;
-            margin-bottom: 5px;
+            margin-right: 10px;
         }
 
-        #send-button {
+        #send-button, #upload-button {
             padding: 5px 10px;
             background-color: #8953af;
             color: #fff;
             border: none;
             border-radius: 3px;
             cursor: pointer;
+            margin-right: 10px;
+        }
+
+        #image-input {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="message bot-message">Welcome to the chat! Replies may take a few seconds to compute and may not be accurate, check it yourself</div>
-    </div>
-    <div class="input-container">
-        <input type="text" id="message-input" placeholder="Type your message...">
-        <button id="send-button">Send</button>
+    <div class="chat-wrapper">
+        <div class="chat-container">
+            <div class="message bot-message">Welcome to the chat! Replies may take a few seconds to compute and may not be accurate, check it yourself</div>
+        </div>
+        <div class="input-container">
+            <input type="text" id="message-input" placeholder="Type your message...">
+            <button id="send-button">Send</button>
+            <button id="upload-button">Upload Image</button>
+            <input type="file" id="image-input" accept="image/*">
+        </div>
     </div>
 
     <script>
@@ -77,23 +94,67 @@
             var chatContainer = document.querySelector('.chat-container');
             var messageInput = document.querySelector('#message-input');
             var sendButton = document.querySelector('#send-button');
+            var uploadButton = document.querySelector('#upload-button');
+            var imageInput = document.querySelector('#image-input');
+            var uploadedImage = null;
+
+            uploadButton.addEventListener('click', function() {
+                imageInput.click();
+            });
+
+            imageInput.addEventListener('change', function(event) {
+                var file = event.target.files[0];
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedImage = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
 
             function sendMessage() {
                 var message = messageInput.value.trim();
-                if (message !== "") {
-                    var messageElement = document.createElement('div');
-                    messageElement.classList.add('message', 'user-message');
-                    messageElement.textContent = message;
-                    chatContainer.appendChild(messageElement);
+                if (message !== "" || uploadedImage !== null) {
+                    if (message !== "") {
+                        var messageElement = document.createElement('div');
+                        messageElement.classList.add('message', 'user-message');
+                        messageElement.textContent = message;
+                        chatContainer.appendChild(messageElement);
+                    }
 
-                    // Send message to the server and get response
-                    var url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=AIzaSyAHBZJKJw4zQNkNpl1VD2TGioLpz7sFeSk";
+                    if (uploadedImage !== null) {
+                        var imageElement = document.createElement('img');
+                        imageElement.src = uploadedImage;
+                        imageElement.style.maxWidth = "100%";
+                        imageElement.style.marginTop = "10px";
+                        chatContainer.appendChild(imageElement);
+                    }
+
+                    var data = {
+                        "contents": [
+                            {
+                                "role": "user",
+                                "parts": [
+                                    {"text": message}
+                                ]
+                            }
+                        ]
+                    };
+                    var url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=AIzaSyAHBZJKJw4zQNkNpl1VD2TGioLpz7sFeSk"
+
+                    if (uploadedImage !== null) {
+                        data.contents[0].parts.push({
+                            "inline_data": {
+                                "mime_type": "image/jpeg",
+                                "data": uploadedImage.split(',')[1]
+                            }
+                        });
+                        url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro-vision:generateContent?key=AIzaSyAHBZJKJw4zQNkNpl1VD2TGioLpz7sFeSk";
+                    }
+
                     var headers = {
                         "Content-Type": "application/json"
                     };
-                    var data = {"contents":[
-                        {"role": "user",
-                             "parts":[{"text": message}]}]};
+
                     var corsAnywhereUrl = 'https://web-production-43a1e.up.railway.app/';
 
                     fetch(corsAnywhereUrl + url, {
@@ -103,17 +164,26 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        var responseMessage = data.candidates[0]?.content?.parts[0]?.text || "No response text available.";
-                        var responseElement = document.createElement('div');
-                        responseElement.classList.add('message', 'bot-message');
-                        responseElement.textContent = responseMessage;
-                        chatContainer.appendChild(responseElement);
+                        console.log(data); // Log the full response for debugging
+                        if (data && data.candidates && data.candidates.length > 0) {
+                            var responseMessage = data.candidates[0]?.content?.parts[0]?.text || "No response text available.";
+                            var responseElement = document.createElement('div');
+                            responseElement.classList.add('message', 'bot-message');
+                            responseElement.textContent = responseMessage;
+                            chatContainer.appendChild(responseElement);
+                        } else {
+                            throw new Error("Invalid response format");
+                        }
                     })
                     .catch(error => {
-                        chatContainer.appendChild("Error occurred: " + error.message);
+                        var errorElement = document.createElement('div');
+                        errorElement.classList.add('message', 'bot-message');
+                        errorElement.textContent = "Error occurred: " + error.message;
+                        chatContainer.appendChild(errorElement);
                     });
 
                     messageInput.value = "";
+                    uploadedImage = null;
                 }
             }
 
