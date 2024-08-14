@@ -85,6 +85,7 @@
             <input type="text" id="message-input" placeholder="Type your message...">
             <button id="send-button">Send</button>
             <button id="upload-button">Upload Image</button>
+            <a href="https://cors-anywhere.herokuapp.com/"><button id="send-button">CORS</butto></a>
             <input type="file" id="image-input" accept="image/*">
         </div>
     </div>
@@ -97,11 +98,11 @@
             var uploadButton = document.querySelector('#upload-button');
             var imageInput = document.querySelector('#image-input');
             var uploadedImage = null;
-
+    
             uploadButton.addEventListener('click', function() {
                 imageInput.click();
             });
-
+    
             imageInput.addEventListener('change', function(event) {
                 var file = event.target.files[0];
                 var reader = new FileReader();
@@ -110,52 +111,33 @@
                 };
                 reader.readAsDataURL(file);
             });
-
+    
             function sendMessage() {
                 var message = messageInput.value.trim();
-                if (message !== "" || uploadedImage !== null) {
-                    if (message !== "") {
-                        var messageElement = document.createElement('div');
-                        messageElement.classList.add('message', 'user-message');
-                        messageElement.textContent = message;
-                        chatContainer.appendChild(messageElement);
-                    }
+                if (message !== "") {
+                    
+                    var messageElement = document.createElement('div');
+                    messageElement.classList.add('message', 'user-message');
+                    messageElement.textContent = message;
+                    chatContainer.appendChild(messageElement);
 
-                    if (uploadedImage !== null) {
-                        var imageElement = document.createElement('img');
-                        imageElement.src = uploadedImage;
-                        imageElement.style.maxWidth = "100%";
-                        imageElement.style.marginTop = "10px";
-                        chatContainer.appendChild(imageElement);
-                    }
 
-                    var data = {
-                        "contents": [
-                            {
-                                "role": "user",
-                                "parts": [
-                                    {"text": message}
-                                ]
-                            }
-                        ]
+                    var data = {"messages": 
+                    [
+                        {"role": "user", 
+                        "content": message
+                    }
+                    ], 
+                    "model": "llama3-70b-8192"
                     };
-                    var url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=AIzaSyAHBZJKJw4zQNkNpl1VD2TGioLpz7sFeSk"
-
-                    if (uploadedImage !== null) {
-                        data.contents[0].parts.push({
-                            "inline_data": {
-                                "mime_type": "image/jpeg",
-                                "data": uploadedImage.split(',')[1]
-                            }
-                        });
-                        url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro-vision:generateContent?key=AIzaSyAHBZJKJw4zQNkNpl1VD2TGioLpz7sFeSk";
-                    }
-
+                    var url = "https://api.groq.com/openai/v1/chat/completions";
                     var headers = {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer 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"
                     };
-
-                    var corsAnywhereUrl = 'https://web-production-43a1e.up.railway.app/';
+    
+                    var corsAnywhereUrl = 'https://cors-anywhere.herokuapp.com/';
+                    
 
                     fetch(corsAnywhereUrl + url, {
                         method: 'POST',
@@ -164,16 +146,12 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        console.log(data); // Log the full response for debugging
-                        if (data && data.candidates && data.candidates.length > 0) {
-                            var responseMessage = data.candidates[0]?.content?.parts[0]?.text || "No response text available.";
-                            var responseElement = document.createElement('div');
-                            responseElement.classList.add('message', 'bot-message');
-                            responseElement.textContent = responseMessage;
-                            chatContainer.appendChild(responseElement);
-                        } else {
-                            throw new Error("Invalid response format");
-                        }
+                        console.log(data); // Log the full response for debugging) {
+                        var responseMessage = data.choices[0].message.content;
+                        var responseElement = document.createElement('div');
+                        responseElement.classList.add('message', 'bot-message');
+                        responseElement.textContent = responseMessage;
+                        chatContainer.appendChild(responseElement);
                     })
                     .catch(error => {
                         var errorElement = document.createElement('div');
@@ -181,12 +159,11 @@
                         errorElement.textContent = "Error occurred: " + error.message;
                         chatContainer.appendChild(errorElement);
                     });
-
+    
                     messageInput.value = "";
-                    uploadedImage = null;
                 }
             }
-
+    
             sendButton.addEventListener('click', sendMessage);
             messageInput.addEventListener('keydown', function(event) {
                 if (event.key === "Enter") {
@@ -195,5 +172,6 @@
             });
         })();
     </script>
+    
 </body>
 </html>
