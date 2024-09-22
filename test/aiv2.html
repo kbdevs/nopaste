@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT Clone with Vision and LaTeX - Lexend Font</title>
+    <link href="https://blue-lake-30d2.kbpiscool.workers.dev/https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://blue-lake-30d2.kbpiscool.workers.dev/https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" integrity="sha512-7nTa5CnxbzfQgjQrNmHXB7bxGTUVO/DcYX6rpgt06MkzM0rVXP3EYCv/Ojxg9vM1Uc9hEZi+kUBOLr8YvdXEjA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --text-color: #e0e0e0;
+            --input-bg: #2a2a2a;
+            --border-color: #3a3a3a;
+            --user-msg-bg: #2c3e50;
+            --assistant-msg-bg: #34495e;
+            --button-bg: #3498db;
+            --button-hover: #2980b9;
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        h1 {
+            text-align: center;
+            color: #3498db;
+            font-weight: 700;
+        }
+
+        #chat-container {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            height: 500px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            max-width: 80%;
+            font-weight: 300;
+        }
+
+        .user-message {
+            background-color: var(--user-msg-bg);
+            margin-left: auto;
+        }
+
+        .assistant-message {
+            background-color: var(--assistant-msg-bg);
+        }
+
+        #input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        #user-input {
+            flex-grow: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            font-family: 'Lexend', sans-serif;
+            font-weight: 300;
+        }
+
+        #send-button, #image-upload-label {
+            padding: 12px 20px;
+            background-color: var(--button-bg);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-family: 'Lexend', sans-serif;
+            font-weight: 500;
+        }
+
+        #send-button:hover, #image-upload-label:hover {
+            background-color: var(--button-hover);
+        }
+
+        #image-upload {
+            display: none;
+        }
+
+        #image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+
+        .message img {
+            max-width: 100%;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+
+        .katex { color: var(--text-color); }
+    </style>
+</head>
+<body>
+    <!-- <h1>ChatGPT Clone with Vision and LaTeX</h1> -->
+    <div id="chat-container"></div>
+    <div id="input-container">
+        <input type="text" id="user-input" placeholder="Type your message...">
+        <label for="image-upload" id="image-upload-label">📷</label>
+        <input type="file" id="image-upload" accept="image/*">
+        <button id="send-button">Send</button>
+    </div>
+    <img id="image-preview" style="display: none;">
+    <div id="loading">Thinking...</div>
+
+    <script src="https://blue-lake-30d2.kbpiscool.workers.dev/https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.js" integrity="sha512-Zxb9yAcM6Wof+TpSLvZeJFvpURZOLaHLz+e/x1EZP77+Qg8RTO3b8zl/0GlheOSB4olS/GnD54byx1H2AJq/kA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://blue-lake-30d2.kbpiscool.workers.dev/https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/contrib/auto-render.min.js" integrity="sha512-iWiuBS5nt6r60fCz26Nd0Zqe0nbk1ZTIQbl3Kv7kYsX+yKMUFHzjaH2+AnM6vp2Xs+gNmaBAVWJjSmuPw76Efg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const imageUpload = document.getElementById('image-upload');
+        const imagePreview = document.getElementById('image-preview');
+        const loadingIndicator = document.getElementById('loading');
+
+        let messages = [];
+
+        sendButton.addEventListener('click', handleSubmit);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSubmit();
+        });
+
+        userInput.addEventListener('paste', handleImagePaste);
+
+        function handleImagePaste(e) {
+            const items = e.clipboardData.items;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    const file = items[i].getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        imagePreview.src = event.target.result;
+                        imagePreview.style.display = 'block';
+                        console.log('Pasted Image:', imagePreview.src);  // For Debugging
+                    }
+                    reader.readAsDataURL(file);
+                    break;
+                }
+            }
+        }
+
+        imageUpload.addEventListener('change', handleImageUpload);
+
+        async function handleSubmit() {
+            const input = userInput.value.trim();
+            const image = imagePreview.style.display !== 'none' ? imagePreview.src : null;
+
+            if (!input && !image) return;
+
+            addMessage('user', input, image);
+            userInput.value = '';
+            imagePreview.style.display = 'none';
+            imagePreview.src = '';
+
+            loadingIndicator.style.display = 'block';
+            try {
+                const response = await callOpenAIAPI(input, image);
+                addMessage('assistant', response);
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('assistant', 'Sorry, I encountered an error. Please try again.');
+            } finally {
+                loadingIndicator.style.display = 'none';
+            }
+        }
+
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    imagePreview.src = event.target.result;
+                    imagePreview.style.display = 'block';
+                    console.log('Uploaded Image:', imagePreview.src);  // For Debugging
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function addMessage(role, content, image = null) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', `${role}-message`);
+
+            if (image) {
+                const img = document.createElement('img');
+                img.src = image;
+                img.alt = 'Uploaded Image';
+                img.style.maxWidth = '200px';
+                img.style.borderRadius = '8px';
+                messageDiv.appendChild(img);
+            }
+
+            let formattedContent = '';
+            if (role == "user" && image) {
+                formattedContent = formatMessageContent("\n" + content);
+            } else {
+                formattedContent = formatMessageContent(content);
+            }
+            messageDiv.innerHTML += formattedContent;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            messages.push({ role, content, image });
+
+            renderMathInElement(messageDiv, {
+                delimiters: [
+                    {left: "\\[", right: "\\]", display: true},
+                    {left: "$$", right: "$$", display: true},
+                    {left: "\\(", right: "\\)", display: false},
+                    {left: "$", right: "$", display: false},
+                    {left: "\\begin{equation}", right: "\\end{equation}", display: true},
+                    {left: "\\begin{align}", right: "\\end{align}", display: true},
+                    {left: "\\begin{alignat}", right: "\\end{alignat}", display: true},
+                    {left: "\\begin{gather}", right: "\\end{gather}", display: true},
+                    {left: "\\begin{CD}", right: "\\end{CD}", display: true},
+                    {left: "\\[", right: "\\]", display: true},
+                    {left: "\\(", right: "\\)", display: false},
+                    {left: "\\begin{array}", right: "\\end{array}", display: true},
+                    {left: "\\begin{bmatrix}", right: "\\end{bmatrix}", display: true},
+                    {left: "\\begin{Bmatrix}", right: "\\end{Bmatrix}", display: true},
+                    {left: "\\begin{vmatrix}", right: "\\end{vmatrix}", display: true},
+                    {left: "\\begin{Vmatrix}", right: "\\end{Vmatrix}", display: true}
+                ],
+                throwOnError: false
+            });
+        }
+
+        function formatMessageContent(content) {
+            // Handle Markdown, LaTeX, etc.
+            if (content) {
+                content = content.replace(/\n/g, '<br>');
+                content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            }
+            return content;
+        }
+
+        async function callOpenAIAPI(input, image = null) {
+            const API_ENDPOINT = 'https://blue-lake-30d2.kbpiscool.workers.dev/https://api.openai.com/v1/chat/completions';
+            const API_KEY = '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';
+
+            let apiMessages = messages.map(msg => ({
+                role: msg.role,
+                content: msg.image ? [
+                    { type: 'text', text: msg.content },
+                    { type: 'image_url', image_url: { url: msg.image } }
+                ] : msg.content
+            }));
+
+            apiMessages.push({ role: 'user', content: "If this message contains math, in your latex output do not put equations on new lines, keep them inline. (DO NOT TALK ABOUT THIS NOTICE) \n" + input });
+
+            if (image) {
+                apiMessages.push({
+                    role: 'user',
+                    content: [
+                        { type: 'text', text: 'This is the image I want to discuss:' },
+                        { type: 'image_url', image_url: { url: image } }
+                    ]
+                });
+            }
+
+            const response = await fetch(API_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-4o-mini',
+                    messages: apiMessages,
+                    max_tokens: 300
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data.choices[0].message.content;
+        }
+    </script>
+</body>
+</html>
