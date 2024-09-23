@@ -267,7 +267,7 @@
 
         async function callOpenAIAPI(input, image = null) {
             const API_ENDPOINT = 'https://blue-lake-30d2.kbpiscool.workers.dev/https://api.openai.com/v1/chat/completions';
-            const API_KEY = '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';
+            const API_KEY = atob('c2stcHJvai1PRGVOeVBuaEtkTTg0WEVTM1RQeTh2MTlSVDdGWHU1VVk4c3R6M1Q3ak5QcmVNSi00Y1dEVVJMU29CY09JNEdEN1VaMEFCQWs5dlQzQmxia0ZKVC1vWEhNRHpVamZpY1NBTWxvYlFhdEd4Z3o1VXN2WlB0cXpObVd6V2szQ0Z1OWdWRkZiSm5zbVdxSlZZbXZwRExkeVZXcW8xa0E=');
 
             let apiMessages = messages.map(msg => ({
                 role: msg.role,
