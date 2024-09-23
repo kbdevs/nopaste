@@ -13,10 +13,10 @@
             --text-color: #e0e0e0;
             --input-bg: #2a2a2a;
             --border-color: #3a3a3a;
-            --user-msg-bg: #2c3e50;
-            --assistant-msg-bg: #34495e;
-            --button-bg: #3498db;
-            --button-hover: #2980b9;
+            --user-msg-bg: #8e44ad; /* Changed from #2c3e50 to a purple shade */
+            --assistant-msg-bg: #9b59b6; /* Changed from #34495e to a lighter purple shade */
+            --button-bg: #9b59b6; /* Already purple */
+            --button-hover: #8e44ad; /* Already purple */
         }
 
         body {
@@ -31,7 +31,7 @@
 
         h1 {
             text-align: center;
-            color: #3498db;
+            color: var(--button-bg); /* Already using the purple variable */
             font-weight: 700;
         }
 
