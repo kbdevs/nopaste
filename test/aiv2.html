@@ -13,10 +13,10 @@
             --text-color: #e0e0e0;
             --input-bg: #2a2a2a;
             --border-color: #3a3a3a;
-            --user-msg-bg: rgba(142, 68, 173, 0.5); /* Changed to a transparent purple shade */
-            --assistant-msg-bg: rgba(155, 89, 182, 0.5); /* Changed to a transparent lighter purple shade */
-            --button-bg: #9b59b6; /* Already purple */
-            --button-hover: #8e44ad; /* Already purple */
+            --user-msg-bg: rgba(142, 68, 173, 0.5);
+            --assistant-msg-bg: rgba(155, 89, 182, 0.5);
+            --button-bg: #9b59b6;
+            --button-hover: #8e44ad;
         }
 
         body {
@@ -31,7 +31,7 @@
 
         h1 {
             text-align: center;
-            color: var(--button-bg); /* Already using the purple variable */
+            color: var(--button-bg);
             font-weight: 700;
         }
 
@@ -49,8 +49,18 @@
             margin-bottom: 15px;
             padding: 12px;
             border-radius: 8px;
-            width: fit-content; /* Updated */
+            width: fit-content;
             font-weight: 300;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .timestamp {
+            font-size: 0.8em;
+            color: #7f8c8d;
+            margin-top: 5px;
+            align-self: flex-end;
         }
 
         .user-message {
@@ -67,6 +77,7 @@
             gap: 10px;
             flex-wrap: nowrap;
         }
+
         #user-input {
             flex-grow: 1;
             padding: 12px;
@@ -79,26 +90,21 @@
             min-width: 0;
         }
 
-
-        
-
-        #send-button, #image-upload-label {
+        #send-button, #image-upload-label, #clear-button {
             padding: 12px 20px;
             background-color: var(--button-bg);
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s, border 0.3s; /* Added transition for border */
+            transition: background-color 0.3s, border 0.3s;
             font-family: 'Lexend', sans-serif;
             font-weight: 500;
             flex-shrink: 0;
-            position: relative; /* Added for pseudo-element positioning */
+            position: relative;
         }
 
-
-
-        #send-button:hover, #image-upload-label:hover {
+        #send-button:hover, #image-upload-label:hover, #clear-button:hover {
             background-color: var(--button-hover);
         }
 
@@ -145,7 +151,7 @@
                 flex-wrap: nowrap;
             }
 
-            #send-button, #image-upload-label {
+            #send-button, #image-upload-label, #clear-button {
                 width: auto;
                 padding: 10px;
             }
@@ -164,13 +170,13 @@
     </style>
 </head>
 <body>
-    <!-- <h1>ChatGPT Clone with Vision and LaTeX</h1> -->
     <div id="chat-container"></div>
     <div id="input-container">
         <input type="text" id="user-input" placeholder="Type your message...">
         <label for="image-upload" id="image-upload-label">📷</label>
         <input type="file" id="image-upload" accept="image/*">
         <button id="send-button">Send</button>
+        <button id="clear-button">Clear Chat</button>
     </div>
     <img id="image-preview" style="display: none;">
     <div id="loading">Thinking...</div>
@@ -181,13 +187,15 @@
         const chatContainer = document.getElementById('chat-container');
         const userInput = document.getElementById('user-input');
         const sendButton = document.getElementById('send-button');
+        const clearButton = document.getElementById('clear-button');
         const imageUpload = document.getElementById('image-upload');
         const imagePreview = document.getElementById('image-preview');
         const loadingIndicator = document.getElementById('loading');
 
-        let messages = [];
+        let messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
 
         sendButton.addEventListener('click', handleSubmit);
+        clearButton.addEventListener('click', clearChat);
         userInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') handleSubmit();
         });
@@ -203,7 +211,7 @@
                     reader.onload = function(event) {
                         imagePreview.src = event.target.result;
                         imagePreview.style.display = 'block';
-                        console.log('Pasted Image:', imagePreview.src);  // For Debugging
+                        console.log('Pasted Image:', imagePreview.src);
                     }
                     reader.readAsDataURL(file);
                     break;
@@ -243,13 +251,13 @@
                 reader.onload = function(event) {
                     imagePreview.src = event.target.result;
                     imagePreview.style.display = 'block';
-                    console.log('Uploaded Image:', imagePreview.src);  // For Debugging
+                    console.log('Uploaded Image:', imagePreview.src);
                 }
                 reader.readAsDataURL(file);
             }
         }
 
-        function addMessage(role, content, image = null) {
+        function addMessage(role, content, image = null, isHistory = false) {
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('message', `${role}-message`);
 
@@ -269,10 +277,22 @@
                 formattedContent = formatMessageContent(content);
             }
             messageDiv.innerHTML += formattedContent;
+
+            const timestamp = document.createElement('div');
+            timestamp.classList.add('timestamp');
+            timestamp.textContent = new Date().toLocaleTimeString();
+            messageDiv.appendChild(timestamp);
+
             chatContainer.appendChild(messageDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            messages.push({ role, content, image });
+            if (!isHistory) {
+                const messageExists = messages.some(msg => msg.role === role && msg.content === content && msg.image === image);
+                if (!messageExists) {
+                    messages.push({ role, content, image, timestamp: timestamp.textContent });
+                    localStorage.setItem('chatMessages', JSON.stringify(messages));
+                }
+            }
 
             renderMathInElement(messageDiv, {
                 delimiters: [
@@ -298,7 +318,6 @@
         }
 
         function formatMessageContent(content) {
-            // Handle Markdown, LaTeX, etc.
             if (content) {
                 content = content.replace(/\n/g, '<br>');
                 content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -350,6 +369,21 @@
             const data = await response.json();
             return data.choices[0].message.content;
         }
+
+        function clearChat() {
+            chatContainer.innerHTML = '';
+            messages = [];
+            localStorage.removeItem('chatMessages');
+        }
+
+        function loadChatHistory() {
+            messages.forEach(msg => {
+                const { role, content, image } = msg;
+                addMessage(role, content, image, true);
+            });
+        }
+
+        loadChatHistory();
     </script>
 </body>
 </html>
