@@ -13,8 +13,8 @@
             --text-color: #e0e0e0;
             --input-bg: #2a2a2a;
             --border-color: #3a3a3a;
-            --user-msg-bg: #8e44ad; /* Changed from #2c3e50 to a purple shade */
-            --assistant-msg-bg: #9b59b6; /* Changed from #34495e to a lighter purple shade */
+            --user-msg-bg: rgba(142, 68, 173, 0.5); /* Changed to a transparent purple shade */
+            --assistant-msg-bg: rgba(155, 89, 182, 0.5); /* Changed to a transparent lighter purple shade */
             --button-bg: #9b59b6; /* Already purple */
             --button-hover: #8e44ad; /* Already purple */
         }
@@ -49,7 +49,7 @@
             margin-bottom: 15px;
             padding: 12px;
             border-radius: 8px;
-            max-width: 80%;
+            width: fit-content; /* Updated */
             font-weight: 300;
         }
 
@@ -67,7 +67,6 @@
             gap: 10px;
             flex-wrap: nowrap;
         }
-
         #user-input {
             flex-grow: 1;
             padding: 12px;
@@ -80,6 +79,9 @@
             min-width: 0;
         }
 
+
+        
+
         #send-button, #image-upload-label {
             padding: 12px 20px;
             background-color: var(--button-bg);
@@ -87,11 +89,14 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, border 0.3s; /* Added transition for border */
             font-family: 'Lexend', sans-serif;
             font-weight: 500;
             flex-shrink: 0;
+            position: relative; /* Added for pseudo-element positioning */
         }
+
+
 
         #send-button:hover, #image-upload-label:hover {
             background-color: var(--button-hover);
