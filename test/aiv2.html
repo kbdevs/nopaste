@@ -36,7 +36,7 @@
         }
 
         #chat-container {
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             padding: 20px;
             height: 500px;
@@ -88,8 +88,12 @@
             font-family: 'Lexend', sans-serif;
             font-weight: 300;
             min-width: 0;
+            outline: 2px solid var(--border-color);
         }
 
+        #user-input:focus {
+            outline: 2px solid var(--button-bg);
+        }
         #send-button, #image-upload-label, #clear-button {
             padding: 12px 20px;
             background-color: var(--button-bg);
@@ -106,6 +110,26 @@
 
         #send-button:hover, #image-upload-label:hover, #clear-button:hover {
             background-color: var(--button-hover);
+        }
+
+        #send-button::after, #image-upload-label::after, #clear-button::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 5px;
+            border: 2px solid transparent;
+            background: conic-gradient(#9b59b6, #8e44ad, #6c3483, #5b2c6f, #9b59b6);
+            filter: blur(5px);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #send-button:hover::after, #image-upload-label:hover::after, #clear-button:hover::after {
+            opacity: 1;
         }
 
         #image-upload {
