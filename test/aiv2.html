@@ -43,6 +43,12 @@
             overflow-y: auto;
             margin-bottom: 20px;
             background-color: rgba(255, 255, 255, 0.05);
+            transition: border 0.3s ease-in-out;
+        }
+
+        #chat-container:hover {
+            border: 2px solid #4a4a4a;
+            transition: border 0.3s ease-in-out;
         }
 
         .message {
@@ -89,10 +95,12 @@
             font-weight: 300;
             min-width: 0;
             outline: 2px solid var(--border-color);
+            transition: outline 0.3s ease-in-out;
         }
 
-        #user-input:focus {
+        #user-input:hover, #user-input:focus, #user-input:active {
             outline: 2px solid var(--button-bg);
+            transition: outline 0.3s ease-in-out;
         }
         #send-button, #image-upload-label, #clear-button {
             padding: 12px 20px;
