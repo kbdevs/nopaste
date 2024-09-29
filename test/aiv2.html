@@ -225,6 +225,7 @@
         const loadingIndicator = document.getElementById('loading');
 
         let messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+        let isLocked = false;
 
         sendButton.addEventListener('click', handleSubmit);
         clearButton.addEventListener('click', clearChat);
@@ -359,6 +360,7 @@
 
         async function callOpenAIAPI(input, image = null) {
             const API_ENDPOINT = 'https://blue-lake-30d2.kbpiscool.workers.dev/https://api.openai.com/v1/chat/completions';
+            // my api key
             const API_KEY = atob('c2stcHJvai1PRGVOeVBuaEtkTTg0WEVTM1RQeTh2MTlSVDdGWHU1VVk4c3R6M1Q3ak5QcmVNSi00Y1dEVVJMU29CY09JNEdEN1VaMEFCQWs5dlQzQmxia0ZKVC1vWEhNRHpVamZpY1NBTWxvYlFhdEd4Z3o1VXN2WlB0cXpObVd6V2szQ0Z1OWdWRkZiSm5zbVdxSlZZbXZwRExkeVZXcW8xa0E=');
 
             let apiMessages = messages.map(msg => ({
@@ -414,6 +416,34 @@
                 addMessage(role, content, image, true);
             });
         }
+
+        function promptPassword() {
+            const password = 'byebye'; // Set your password here
+            let userInput = '';
+            while (userInput !== password) {
+                userInput = prompt('Enter the password:');
+                if (userInput === null) {
+                    // User pressed cancel, keep the tab locked
+                    document.body.style.display = 'none';
+                    return;
+                }
+            }
+            document.body.style.display = 'block';
+        }
+
+        isLocked = true;
+        document.body.style.display = 'none';
+        promptPassword();
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                isLocked = true;
+                document.body.style.display = 'none';
+            } else if (isLocked) {
+                promptPassword();
+                isLocked = false;
+            }
+        });
 
         loadChatHistory();
     </script>
