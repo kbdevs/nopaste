@@ -11,7 +11,7 @@
         {"role": "user",
           "parts":[{"text": "CONTEXT: " + context + promptText}]}]};
     if (promptText != null) {
-        var corsAnywhereUrl = 'https://web-production-43a1e.up.railway.app/';
+        var corsAnywhereUrl = 'https://cors.kbdevs.xyz/';
         fetch(corsAnywhereUrl + url, {
             method: 'POST',
             headers: headers,
